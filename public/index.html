@@ -1,0 +1,2551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pharmacy AI | Intelligent Medicine Assistant</title>
+    
+    <!-- Google Fonts for Premium Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ========== STYLES (identical to the design file) ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            height: 100vh;
+            overflow: hidden;
+            background: #0A0F1F;
+        }
+
+        /* Main Container */
+        .main-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #0A0F1F 0%, #1A1F33 100%);
+        }
+
+        /* Full Screen Video Avatar with Premium Overlay */
+        .avatar-fullscreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .avatar-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.9) contrast(1.1) saturate(1.1);
+        }
+
+        /* Premium Gradient Overlay */
+        .overlay-premium {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 50%, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.6) 100%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* Premium Status Indicator (top left) */
+        .status-premium {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(20, 30, 50, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 12px 24px;
+            border-radius: 100px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #10b981;
+            box-shadow: 0 0 30px #10b981;
+            transition: all 0.3s ease;
+        }
+
+        .status-dot.paused {
+            background: #f59e0b;
+            box-shadow: 0 0 30px #f59e0b;
+        }
+
+        .status-dot.talking {
+            background: #3b82f6;
+            box-shadow: 0 0 30px #3b82f6;
+            animation: pulse-premium 1.5s infinite;
+        }
+
+        @keyframes pulse-premium {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.3); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .status-text {
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            opacity: 0.9;
+        }
+
+        /* Bottom center action buttons */
+        .bottom-action-group {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 15;
+            display: flex;
+            gap: 20px;
+            background: rgba(20, 30, 50, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 10px 20px;
+            border-radius: 80px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .action-btn-premium {
+            background: transparent;
+            border: none;
+            border-radius: 60px;
+            padding: 16px 40px;
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .action-btn-premium i {
+            font-size: 20px;
+        }
+
+        .action-btn-premium.scan {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+        }
+
+        .action-btn-premium.chat {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        .action-btn-premium:hover {
+            transform: translateY(-5px);
+            filter: brightness(1.1);
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.5);
+        }
+
+        .action-btn-premium.active {
+            filter: brightness(0.9);
+            transform: scale(0.98);
+        }
+
+        /* Voice Wave */
+        .voice-wave-premium {
+            position: absolute;
+            bottom: 150px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 5;
+            display: none;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 20px 40px;
+            border-radius: 100px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .voice-wave-premium.visible {
+            display: flex;
+        }
+
+        .wave-bar-premium {
+            width: 6px;
+            height: 30px;
+            background: white;
+            border-radius: 6px;
+            animation: wave-premium 1.2s ease-in-out infinite;
+        }
+
+        .wave-bar-premium:nth-child(2) { animation-delay: 0.1s; }
+        .wave-bar-premium:nth-child(3) { animation-delay: 0.2s; }
+        .wave-bar-premium:nth-child(4) { animation-delay: 0.3s; }
+        .wave-bar-premium:nth-child(5) { animation-delay: 0.4s; }
+
+        @keyframes wave-premium {
+            0%, 100% { transform: scaleY(0.5); opacity: 0.5; }
+            50% { transform: scaleY(1.5); opacity: 1; }
+        }
+
+        /* ========== SMALLER PROFESSIONAL CHAT SIDEBAR ========== */
+        .chat-sidebar-premium {
+            position: absolute;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: #ffffff;
+            z-index: 20;
+            transition: right 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: -20px 0 50px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid #eef2f6;
+        }
+
+        .chat-sidebar-premium.visible {
+            right: 0;
+        }
+
+        /* Compact header */
+        .chat-header-premium {
+            padding: 20px 24px 12px;
+            border-bottom: 1px solid #f0f4f8;
+        }
+
+        .chat-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .chat-header-premium h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            letter-spacing: -0.2px;
+        }
+
+        .chat-header-premium h2 i {
+            color: #2563eb;
+            font-size: 22px;
+        }
+
+        .close-chat-premium {
+            background: #f8fafc;
+            border: none;
+            color: #64748b;
+            font-size: 16px;
+            cursor: pointer;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .close-chat-premium:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        .chat-subtitle-premium {
+            font-size: 14px;
+            font-weight: 400;
+            color: #64748b;
+        }
+
+        /* Messages area */
+        .chat-messages-premium {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 24px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .message-premium {
+            padding: 12px 16px;
+            border-radius: 18px;
+            max-width: 88%;
+            word-wrap: break-word;
+            font-size: 14px;
+            line-height: 1.5;
+            animation: messageIn 0.3s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+        }
+
+        @keyframes messageIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user-message-premium {
+            background: #2563eb;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 6px;
+            font-weight: 500;
+        }
+
+        .avatar-message-premium {
+            background: #f8fafc;
+            color: #1e293b;
+            align-self: flex-start;
+            border-bottom-left-radius: 6px;
+            border: 1px solid #f1f5f9;
+        }
+
+        .avatar-message-premium i {
+            color: #2563eb;
+            margin-right: 6px;
+            font-size: 13px;
+        }
+
+        /* Agent trace */
+        .agent-trace-premium {
+            background: #f0f4ff;
+            border-radius: 16px;
+            padding: 12px;
+            margin: 6px 0;
+            font-size: 13px;
+            border-left: 4px solid #3b82f6;
+            align-self: stretch;
+            max-width: 100%;
+        }
+
+        .agent-trace-premium .agent-name {
+            font-weight: 700;
+            color: #2563eb;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .agent-trace-premium .agent-decision {
+            color: #059669;
+            font-weight: 600;
+        }
+
+        .trace-link {
+            color: #2563eb;
+            text-decoration: none;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 8px;
+        }
+
+        /* NEW: Prescription upload styles */
+        .prescription-upload-premium {
+            background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 18px;
+            margin: 8px 0;
+            animation: slideIn 0.5s ease;
+            align-self: stretch;
+            max-width: 100%;
+        }
+
+        .prescription-upload-premium h3 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .upload-area-premium {
+            border: 2px dashed rgba(255,255,255,0.4);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            margin: 15px 0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-area-premium:hover {
+            border-color: white;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .upload-area-premium i {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .prescription-preview {
+            max-width: 100%;
+            max-height: 150px;
+            border-radius: 12px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .prescription-preview.visible {
+            display: block;
+        }
+
+        .prescription-status {
+            margin-top: 12px;
+            padding: 10px;
+            border-radius: 12px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .prescription-status.valid {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            display: block;
+        }
+
+        .prescription-status.invalid {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            display: block;
+        }
+
+        .prescription-status i {
+            margin-right: 6px;
+        }
+
+        .prescription-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .prescription-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .prescription-btn.upload {
+            background: white;
+            color: #6d28d9;
+        }
+
+        .prescription-btn.validate {
+            background: #10b981;
+            color: white;
+        }
+
+        .prescription-btn.validate:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Order summary */
+        .order-summary-premium {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 18px;
+            margin: 8px 0;
+            animation: slideIn 0.5s ease;
+            align-self: stretch;
+            max-width: 100%;
+            font-size: 14px;
+        }
+        
+        .order-summary-premium h3 {
+            font-size: 18px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            font-size: 13px;
+        }
+        
+        .summary-value {
+            font-weight: 700;
+        }
+        
+        .total-amount {
+            font-size: 20px;
+            font-weight: 800;
+            color: #ffd700;
+            margin-top: 12px;
+            text-align: center;
+        }
+        
+        .confirmation-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 18px;
+        }
+        
+        .confirm-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        
+        .confirm-btn.yes {
+            background: #10b981;
+            color: white;
+        }
+        
+        .confirm-btn.yes:hover {
+            background: #059669;
+            transform: translateY(-3px);
+        }
+        
+        .confirm-btn.no {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .confirm-btn.no:hover {
+            background: #dc2626;
+            transform: translateY(-3px);
+        }
+        
+        /* Success message */
+        .success-message-premium {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 18px;
+            text-align: center;
+            animation: scaleIn 0.5s ease;
+            align-self: stretch;
+            max-width: 100%;
+            font-size: 14px;
+        }
+        
+        .success-message-premium i {
+            font-size: 40px;
+            margin-bottom: 12px;
+        }
+        
+        .success-message-premium h2 {
+            font-size: 22px;
+            margin-bottom: 12px;
+        }
+
+        /* Chat input */
+        .chat-input-premium {
+            padding: 16px 24px 24px;
+            background: #ffffff;
+            border-top: 1px solid #f0f4f8;
+        }
+
+        .input-group-premium {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        #userInput {
+            flex: 1;
+            padding: 14px 18px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 40px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s;
+            background: #ffffff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #1e293b;
+        }
+
+        #userInput:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn-premium {
+            padding: 14px 22px;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            justify-content: center;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .btn-primary-premium {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-voice-premium {
+            background: #f1f5f9;
+            color: #334155;
+            padding: 14px 18px;
+        }
+
+        .btn-voice-premium.listening {
+            background: #ef4444;
+            color: #ffffff;
+        }
+
+        .action-buttons-premium {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-secondary-premium {
+            background: #ffffff;
+            color: #334155;
+            flex: 1;
+            border: 1.5px solid #e2e8f0;
+            font-weight: 600;
+            padding: 12px 0;
+            font-size: 14px;
+        }
+
+        /* Scanner modal - with scrollable details */
+        .scanner-modal-premium {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .scanner-container-premium {
+            background: white;
+            border-radius: 40px;
+            padding: 40px;
+            max-width: 600px;
+            width: 95%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 50px 100px rgba(0, 0, 0, 0.5);
+            animation: modalIn 0.5s ease;
+        }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .scanner-header-premium {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .scanner-header-premium h2 {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #0A0F1F 0%, #1A1F33 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .close-scanner-premium {
+            background: rgba(0, 0, 0, 0.05);
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        /* Camera view */
+        .scanner-view-premium {
+            width: 100%;
+            height: 400px;
+            border-radius: 30px;
+            overflow: hidden;
+            background: #000;
+            margin-bottom: 25px;
+            position: relative;
+            border: 3px solid rgba(59, 130, 246, 0.3);
+            flex-shrink: 0;
+        }
+
+        #scannerVideo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .scanner-overlay-premium {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 3px solid #3b82f6;
+            border-radius: 27px;
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+            pointer-events: none;
+        }
+
+        .scanner-guide {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 80%;
+            border: 2px dashed rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
+            pointer-events: none;
+        }
+
+        .scanner-instruction-premium {
+            text-align: center;
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+
+        #captureBtn {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            border-radius: 60px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        .scanning-indicator-premium {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .spinner-premium {
+            border: 4px solid rgba(59, 130, 246, 0.1);
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        /* Detected medicine section */
+        .detected-medicine-premium {
+            background: #F8FAFF;
+            border-radius: 24px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        .prescription-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .prescription-badge.required {
+            background: #ef4444;
+            color: white;
+        }
+
+        .prescription-badge.not-required {
+            background: #10b981;
+            color: white;
+        }
+
+        .error-message-premium {
+            color: #ef4444;
+            font-size: 15px;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .qr-popup-premium {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(20px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .qr-content-premium {
+            background: white;
+            padding: 50px;
+            border-radius: 40px;
+            text-align: center;
+            max-width: 500px;
+            width: 95%;
+            box-shadow: 0 50px 100px rgba(0, 0, 0, 0.5);
+            animation: modalIn 0.5s ease;
+        }
+
+        .qr-code-premium {
+            width: 280px;
+            height: 280px;
+            margin: 30px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 30px;
+            border: 2px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .qr-code-premium img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .payment-status-premium {
+            margin: 25px 0;
+            padding: 25px;
+            border-radius: 24px;
+            background: #F8FAFF;
+        }
+
+        .close-btn-premium {
+            margin-top: 15px;
+            padding: 18px 50px;
+            background: #F8FAFF;
+            color: #333;
+            border: none;
+            border-radius: 60px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Medicine details */
+        .medicine-detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .detail-label-premium {
+            color: #666;
+            font-weight: 500;
+            font-size: 15px;
+        }
+
+        .detail-value-premium {
+            font-weight: 700;
+            color: #0A0F1F;
+            font-size: 16px;
+        }
+
+        .medicine-actions-premium {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .medicine-action-premium {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .order-now-premium {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .scan-again-premium {
+            background: #f5f5f5;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- Full Screen Video Avatar -->
+        <div class="avatar-fullscreen">
+            <video id="avatarVideo" class="avatar-video" loop muted playsinline autoplay>
+                <source src="avatar-video.mp4" type="video/mp4">
+            </video>
+        </div>
+
+        <!-- Premium Gradient Overlay -->
+        <div class="overlay-premium"></div>
+
+        <!-- Premium Status Indicator -->
+        <div class="status-premium">
+            <div class="status-dot" id="statusDot"></div>
+            <div class="status-text" id="statusText">ONLINE</div>
+        </div>
+
+        <!-- Bottom center buttons -->
+        <div class="bottom-action-group">
+            <button class="action-btn-premium scan" id="scanBtn" onclick="openScanner()">
+                <i class="fas fa-camera"></i> SCAN
+            </button>
+            <button class="action-btn-premium chat" id="toggleChatBtn" onclick="toggleChat()">
+                <i class="fas fa-comment"></i> CHAT
+            </button>
+        </div>
+
+        <!-- Voice Wave -->
+        <div class="voice-wave-premium" id="voiceWave">
+            <div class="wave-bar-premium"></div>
+            <div class="wave-bar-premium"></div>
+            <div class="wave-bar-premium"></div>
+            <div class="wave-bar-premium"></div>
+            <div class="wave-bar-premium"></div>
+        </div>
+
+        <!-- Chat Sidebar -->
+        <div class="chat-sidebar-premium" id="chatSidebar">
+            <div class="chat-header-premium">
+                <div class="chat-header-top">
+                    <h2>
+                        <i class="fas fa-robot"></i>
+                        PHARMACY AI
+                    </h2>
+                    <button class="close-chat-premium" onclick="toggleChat()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="chat-subtitle-premium">Multi-Agent Assistant System</div>
+            </div>
+
+            <div class="chat-messages-premium" id="chatMessages">
+                <div class="message-premium avatar-message-premium">
+                    <i class="fas fa-robot"></i> Hello! I'm your Pharmacy Assistant with multi-agent AI system. I can help you order medicines, scan prescriptions, and track your order.
+                </div>
+            </div>
+
+            <div class="chat-input-premium">
+                <div class="input-group-premium">
+                    <input type="text" id="userInput" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
+                    <button class="btn-premium btn-primary-premium" onclick="sendMessage()">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                    <button class="btn-premium btn-voice-premium" id="voiceInputBtn" onclick="startVoiceInput()" title="Start voice input">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                </div>
+                
+                <div class="action-buttons-premium">
+                    <button class="btn-premium btn-secondary-premium" onclick="startOrderProcess()">
+                        <i class="fas fa-pills"></i> ORDER
+                    </button>
+                    <button class="btn-premium btn-secondary-premium" onclick="openScanner()">
+                        <i class="fas fa-camera"></i> SCAN
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scanner Modal -->
+    <div class="scanner-modal-premium" id="scannerModal">
+        <div class="scanner-container-premium" id="scannerContainer">
+            <div class="scanner-header-premium">
+                <h2>
+                    <i class="fas fa-camera"></i>
+                    SCAN MEDICINE
+                </h2>
+                <button class="close-scanner-premium" onclick="closeScanner()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="scanner-view-premium">
+                <video id="scannerVideo" playsinline autoplay></video>
+                <div class="scanner-overlay-premium"></div>
+                <div class="scanner-guide"></div>
+            </div>
+            
+            <p class="scanner-instruction-premium">
+                <i class="fas fa-info-circle" style="color: #3b82f6; margin-right: 8px;"></i>
+                Position medicine label clearly and click Capture
+            </p>
+            
+            <button id="captureBtn" onclick="captureImage()">
+                <i class="fas fa-camera"></i> CAPTURE & SCAN
+            </button>
+            
+            <div id="scanningIndicator" class="scanning-indicator-premium" style="display: none;">
+                <div class="spinner-premium"></div>
+                <p style="color: #666;">Analyzing medicine...</p>
+            </div>
+            
+            <div class="detected-medicine-premium" id="detectedMedicine" style="display: none;">
+                <h3 style="font-size: 24px; font-weight: 700; margin-bottom: 20px; color: #0A0F1F;">
+                    <i class="fas fa-check-circle" style="color: #10b981;"></i>
+                    <span id="detectedMedicineName"></span>
+                    <span id="prescriptionBadge" class="prescription-badge"></span>
+                </h3>
+                
+                <div class="medicine-detail-row">
+                    <span class="detail-label-premium">Status</span>
+                    <span class="detail-value-premium" id="detectedMedicineStatus"></span>
+                </div>
+                <div class="medicine-detail-row">
+                    <span class="detail-label-premium">Price</span>
+                    <span class="detail-value-premium" id="detectedMedicinePrice"></span>
+                </div>
+                <div class="medicine-detail-row">
+                    <span class="detail-label-premium">Stock</span>
+                    <span class="detail-value-premium" id="detectedMedicineStock"></span>
+                </div>
+                <div class="medicine-detail-row">
+                    <span class="detail-label-premium">Manufacturer</span>
+                    <span class="detail-value-premium" id="detectedMedicineManufacturer"></span>
+                </div>
+                <div class="medicine-detail-row">
+                    <span class="detail-label-premium">Composition</span>
+                    <span class="detail-value-premium" id="detectedMedicineComposition"></span>
+                </div>
+                <div class="medicine-detail-row">
+                    <span class="detail-label-premium">Expiry</span>
+                    <span class="detail-value-premium" id="detectedMedicineExpiry"></span>
+                </div>
+                
+                <div class="medicine-actions-premium">
+                    <button class="medicine-action-premium order-now-premium" onclick="orderScannedMedicine()">
+                        <i class="fas fa-shopping-cart"></i> ORDER NOW
+                    </button>
+                    <button class="medicine-action-premium scan-again-premium" onclick="restartScanner()">
+                        <i class="fas fa-redo-alt"></i> SCAN AGAIN
+                    </button>
+                </div>
+            </div>
+            
+            <div id="scannerError" class="error-message-premium" style="display: none;"></div>
+        </div>
+    </div>
+
+    <!-- QR Popup -->
+    <div class="qr-popup-premium" id="qrPopup">
+        <div class="qr-content-premium">
+            <h2>PAYMENT</h2>
+            <p style="color: #666;" id="paymentInstruction">Scan with any UPI app</p>
+            <div class="qr-code-premium">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=upi://pay?pa=pharmacy@okhdfcbank&pn=Pharmacy&cu=INR" alt="Payment QR">
+            </div>
+            <div class="payment-status-premium" id="paymentStatus">
+                <p style="font-weight: 700; font-size: 24px;">₹<span id="paymentAmount">0</span></p>
+                <p><i class="fas fa-hourglass-half"></i> Waiting for payment...</p>
+            </div>
+            <button class="close-btn-premium" onclick="closeQRPopup()">
+                <i class="fas fa-times"></i> CLOSE
+            </button>
+        </div>
+    </div>
+
+<script>
+    // ==================== VARIABLE DECLARATIONS ====================
+    let conversationState = 'idle';
+    let isAvatarTalking = false;
+    let isChatVisible = false;
+    let scannerStream = null;
+    let sessionId = localStorage.getItem('sessionId') || 'session_' + Date.now();
+    localStorage.setItem('sessionId', sessionId);
+    
+    // Prescription related variables
+    let prescriptionFile = null;
+    let prescriptionValidated = false;
+    let prescriptionValidationResult = null;
+    
+    let currentOrder = {
+        medicine: '',
+        quantity: 0,
+        price: 0,
+        userName: '',
+        phone: '',
+        address: '',
+        paymentMethod: 'UPI',
+        prescriptionRequired: false,
+        prescriptionValidated: false
+    };
+
+    // Elements
+    const avatarVideo = document.getElementById('avatarVideo');
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
+    const voiceWave = document.getElementById('voiceWave');
+    const chatSidebar = document.getElementById('chatSidebar');
+    const toggleChatBtn = document.getElementById('toggleChatBtn');
+    const scannerModal = document.getElementById('scannerModal');
+    const scannerContainer = document.getElementById('scannerContainer');
+    const scannerVideo = document.getElementById('scannerVideo');
+    const detectedMedicine = document.getElementById('detectedMedicine');
+    const scanningIndicator = document.getElementById('scanningIndicator');
+    const captureBtn = document.getElementById('captureBtn');
+    const scannerError = document.getElementById('scannerError');
+    const chatMessages = document.getElementById('chatMessages');
+    const prescriptionBadge = document.getElementById('prescriptionBadge');
+    const voiceInputBtn = document.getElementById('voiceInputBtn');
+    const userInput = document.getElementById('userInput');
+
+    // Voice recognition variables
+    let speechRecognition = null;
+    let voiceModeEnabled = false;
+    let isVoiceListening = false;
+    let isAutoPausedForTTS = false;
+    let pendingVoiceStart = false;
+    let preferredTTSVoice = null;
+
+    // ==================== FUNCTION DEFINITIONS (MUST COME FIRST) ====================
+    
+    // Message functions
+    function addMessage(sender, text, isAgentTrace = false, isOrderSummary = false) {
+        const messageDiv = document.createElement('div');
+        
+        if (isOrderSummary) {
+            messageDiv.classList.add('order-summary-premium');
+            messageDiv.innerHTML = text;
+        } else if (isAgentTrace) {
+            messageDiv.classList.add('agent-trace-premium');
+            messageDiv.innerHTML = text;
+        } else {
+            messageDiv.classList.add('message-premium');
+            messageDiv.classList.add(sender === 'user' ? 'user-message-premium' : 'avatar-message-premium');
+            messageDiv.innerHTML = sender === 'avatar' ? `<i class="fas fa-robot"></i> ${text}` : text;
+        }
+        
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        
+        if (sender === 'avatar' && !isAgentTrace && !isOrderSummary) {
+            avatarStartTalking();
+            speakText(text);
+        }
+    }
+
+    function addAgentTrace(agentName, action, decision, traceUrl = null) {
+        const traceHtml = `
+            <div class="agent-name">
+                <i class="fas fa-robot"></i> ${agentName}
+            </div>
+            <div>Action: ${action}</div>
+            <div class="agent-decision">${decision}</div>
+            ${traceUrl ? `<a href="${traceUrl}" target="_blank" class="trace-link"><i class="fas fa-external-link-alt"></i> View Trace</a>` : ''}
+        `;
+        addMessage('avatar', traceHtml, true);
+    }
+
+    // Video control functions
+    function pauseVideo() {
+        if (avatarVideo && !avatarVideo.paused) {
+            avatarVideo.pause();
+            statusDot.classList.add('paused');
+            statusText.textContent = 'PAUSED';
+        }
+    }
+
+    function resumeVideo() {
+        if (avatarVideo && avatarVideo.paused && !isAvatarTalking) {
+            avatarVideo.play().catch(e => console.log('Play failed:', e));
+            statusDot.classList.remove('paused', 'talking');
+            statusText.textContent = 'ONLINE';
+        }
+    }
+
+    function avatarStartTalking() {
+        isAvatarTalking = true;
+        if (voiceModeEnabled && speechRecognition && isVoiceListening) {
+            isAutoPausedForTTS = true;
+            speechRecognition.stop();
+        }
+        pauseVideo();
+        voiceWave.classList.add('visible');
+        statusDot.classList.add('talking');
+        statusDot.classList.remove('paused');
+        statusText.textContent = 'SPEAKING';
+    }
+
+    function avatarStopTalking() {
+        isAvatarTalking = false;
+        voiceWave.classList.remove('visible');
+        statusDot.classList.remove('talking');
+        
+        if (!isChatVisible) {
+            resumeVideo();
+            statusText.textContent = 'ONLINE';
+        } else {
+            statusDot.classList.add('paused');
+            statusText.textContent = 'PAUSED';
+        }
+
+        if (voiceModeEnabled && isAutoPausedForTTS) {
+            isAutoPausedForTTS = false;
+            setTimeout(() => {
+                if (voiceModeEnabled && !isAvatarTalking) {
+                    beginVoiceListening();
+                }
+            }, 350);
+        }
+
+        if (voiceModeEnabled && pendingVoiceStart) {
+            pendingVoiceStart = false;
+            setTimeout(() => {
+                if (voiceModeEnabled && !isAvatarTalking) {
+                    beginVoiceListening();
+                }
+            }, 100);
+        }
+    }
+
+    function selectPreferredFemaleVoice() {
+        if (!('speechSynthesis' in window)) return null;
+
+        const voices = window.speechSynthesis.getVoices() || [];
+        if (!voices.length) return null;
+
+        const femalePriority = [
+            'female',
+            'zira',
+            'susan',
+            'samantha',
+            'victoria',
+            'karen',
+            'moira',
+            'joanna',
+            'aria',
+            'jenny',
+            'google us english female'
+        ];
+
+        const byPriority = femalePriority
+            .map(keyword => voices.find(voice => voice.name.toLowerCase().includes(keyword)))
+            .find(Boolean);
+
+        if (byPriority) return byPriority;
+
+        const femaleByGenderHint = voices.find(voice =>
+            /(female|woman|girl|zira|samantha|victoria|karen|moira|joanna|aria|jenny)/i.test(voice.name)
+        );
+        if (femaleByGenderHint) return femaleByGenderHint;
+
+        const englishFallback = voices.find(voice => voice.lang && voice.lang.toLowerCase().startsWith('en'));
+        return englishFallback || voices[0];
+    }
+
+    function initializeTTSVoice() {
+        preferredTTSVoice = selectPreferredFemaleVoice();
+    }
+
+    function speakText(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 1;
+            utterance.pitch = 1.15;
+
+            if (!preferredTTSVoice) {
+                preferredTTSVoice = selectPreferredFemaleVoice();
+            }
+            if (preferredTTSVoice) {
+                utterance.voice = preferredTTSVoice;
+                utterance.lang = preferredTTSVoice.lang || 'en-US';
+            }
+            
+            utterance.onstart = avatarStartTalking;
+            utterance.onend = avatarStopTalking;
+            utterance.onerror = avatarStopTalking;
+            
+            window.speechSynthesis.speak(utterance);
+        }
+    }
+
+    // Server connection check
+    async function checkServerConnection() {
+        try {
+            const response = await fetch('/api/health');
+            const data = await response.json();
+            if (data.status === 'healthy') {
+                console.log('✅ Server connected');
+                addMessage('avatar', 'System is ready! Multi-agent AI is online with prescription validation.');
+            }
+        } catch (error) {
+            console.error('❌ Server connection failed:', error);
+            addMessage('avatar', '⚠️ Server connection issue. Please check if server is running.');
+        }
+    }
+
+    // Chat functions
+    function toggleChat() {
+        isChatVisible = !isChatVisible;
+        
+        if (isChatVisible) {
+            chatSidebar.classList.add('visible');
+            toggleChatBtn.classList.add('active');
+            toggleChatBtn.innerHTML = '<i class="fas fa-times"></i> CLOSE';
+            pauseVideo();
+        } else {
+            chatSidebar.classList.remove('visible');
+            toggleChatBtn.classList.remove('active');
+            toggleChatBtn.innerHTML = '<i class="fas fa-comment"></i> CHAT';
+            
+            if (!isAvatarTalking) {
+                resumeVideo();
+            }
+        }
+    }
+
+    function handleKeyPress(event) {
+        if (event.key === 'Enter') {
+            sendMessage();
+        }
+    }
+
+    function sendMessage() {
+        const message = userInput.value.trim();
+        
+        if (message) {
+            addMessage('user', message);
+            userInput.value = '';
+            processUserMessage(message);
+        }
+    }
+
+    function submitVoiceMessage(message) {
+        if (!message || !userInput) return;
+        userInput.value = message;
+        sendMessage();
+    }
+
+    function updateVoiceButtonUI() {
+        if (!voiceInputBtn) return;
+
+        const icon = voiceInputBtn.querySelector('i');
+        if (voiceModeEnabled) {
+            voiceInputBtn.classList.add('listening');
+            voiceInputBtn.title = 'Stop voice input';
+            if (icon) icon.className = 'fas fa-microphone-slash';
+        } else {
+            voiceInputBtn.classList.remove('listening');
+            voiceInputBtn.title = 'Start voice input';
+            if (icon) icon.className = 'fas fa-microphone';
+        }
+    }
+
+    function extractNumberFromInput(input) {
+        const digitMatch = input.match(/\b(\d+)\b/);
+        if (digitMatch) {
+            return parseInt(digitMatch[1], 10);
+        }
+
+        const numberMap = {
+            zero: 0, one: 1, two: 2, three: 3, four: 4, five: 5,
+            six: 6, seven: 7, eight: 8, nine: 9, ten: 10,
+            eleven: 11, twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15,
+            sixteen: 16, seventeen: 17, eighteen: 18, nineteen: 19,
+            twenty: 20, thirty: 30, forty: 40, fifty: 50,
+            sixty: 60, seventy: 70, eighty: 80, ninety: 90
+        };
+
+        const tokens = input
+            .toLowerCase()
+            .replace(/[^a-z\s-]/g, ' ')
+            .replace(/-/g, ' ')
+            .split(/\s+/)
+            .filter(Boolean);
+
+        let total = 0;
+        let current = 0;
+        let hasNumber = false;
+
+        for (const token of tokens) {
+            if (token === 'and') continue;
+
+            if (token === 'hundred') {
+                current = (current || 1) * 100;
+                hasNumber = true;
+                continue;
+            }
+
+            if (Object.prototype.hasOwnProperty.call(numberMap, token)) {
+                current += numberMap[token];
+                hasNumber = true;
+                continue;
+            }
+
+            if (hasNumber) {
+                break;
+            }
+        }
+
+        total += current;
+        if (!hasNumber || total <= 0) return null;
+        return total;
+    }
+
+    function extractPhoneDigitsFromInput(input) {
+        const numeric = input.replace(/\D/g, '');
+        if (numeric.length > 0) return numeric;
+
+        const digitWordMap = {
+            zero: '0', oh: '0', o: '0',
+            one: '1', won: '1',
+            two: '2', to: '2', too: '2',
+            three: '3',
+            four: '4', for: '4',
+            five: '5',
+            six: '6',
+            seven: '7',
+            eight: '8', ate: '8',
+            nine: '9'
+        };
+
+        const tokens = input
+            .toLowerCase()
+            .replace(/[^a-z\s]/g, ' ')
+            .split(/\s+/)
+            .filter(Boolean);
+
+        return tokens
+            .map(token => digitWordMap[token] || '')
+            .join('');
+    }
+
+    function normalizeVoiceInputForState(message) {
+        const trimmed = message.trim();
+
+        if (conversationState === 'quantity') {
+            const quantity = extractNumberFromInput(trimmed);
+            if (quantity !== null) {
+                return String(quantity);
+            }
+        }
+
+        if (conversationState === 'asking_phone') {
+            const phoneDigits = extractPhoneDigitsFromInput(trimmed);
+            if (phoneDigits.length >= 10) {
+                return phoneDigits;
+            }
+        }
+
+        if (conversationState === 'asking_payment_method') {
+            const lower = trimmed.toLowerCase();
+            if (lower.includes('cash') || lower.includes('cod') || lower.includes('c o d')) {
+                return 'cod';
+            }
+            if (lower.includes('upi') || lower.includes('u p i')) {
+                return 'upi';
+            }
+        }
+
+        return trimmed;
+    }
+
+    function createSpeechRecognition() {
+        const SpeechRecognitionClass = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognitionClass) return null;
+
+        const recognition = new SpeechRecognitionClass();
+        recognition.lang = 'en-US';
+        recognition.continuous = false;
+        recognition.interimResults = true;
+        recognition.maxAlternatives = 1;
+
+        recognition.onstart = () => {
+            isVoiceListening = true;
+            updateVoiceButtonUI();
+        };
+
+        recognition.onresult = (event) => {
+            let interimTranscript = '';
+
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                const transcript = event.results[i][0].transcript.trim();
+                if (!transcript) continue;
+
+                if (event.results[i].isFinal) {
+                    if (isAvatarTalking) continue;
+
+                    const normalizedMessage = normalizeVoiceInputForState(transcript);
+                    if (!normalizedMessage) continue;
+
+                    submitVoiceMessage(normalizedMessage);
+                } else {
+                    interimTranscript += transcript + ' ';
+                }
+            }
+
+            if (interimTranscript.trim() && userInput) {
+                userInput.value = interimTranscript.trim();
+            }
+        };
+
+        recognition.onerror = (event) => {
+            console.error('Voice recognition error:', event.error);
+
+            if (event.error === 'not-allowed' || event.error === 'service-not-allowed' || event.error === 'audio-capture') {
+                voiceModeEnabled = false;
+                isVoiceListening = false;
+                updateVoiceButtonUI();
+                addMessage('avatar', 'Voice input permission is blocked. Please allow microphone access and try again.');
+            }
+        };
+
+        recognition.onend = () => {
+            isVoiceListening = false;
+            updateVoiceButtonUI();
+
+            if (voiceModeEnabled && !isAvatarTalking) {
+                setTimeout(() => {
+                    beginVoiceListening();
+                }, 250);
+            }
+        };
+
+        return recognition;
+    }
+
+    function beginVoiceListening() {
+        if (!voiceModeEnabled) return;
+        if (!speechRecognition) {
+            speechRecognition = createSpeechRecognition();
+        }
+        if (!speechRecognition || isVoiceListening || isAvatarTalking) return;
+
+        try {
+            speechRecognition.start();
+        } catch (error) {
+            console.warn('Voice recognition start skipped:', error.message);
+        }
+    }
+
+    function stopVoiceInput() {
+        voiceModeEnabled = false;
+        isAutoPausedForTTS = false;
+        pendingVoiceStart = false;
+        updateVoiceButtonUI();
+
+        if (speechRecognition && isVoiceListening) {
+            speechRecognition.stop();
+        }
+    }
+
+    function startVoiceInput() {
+        const SpeechRecognitionClass = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognitionClass) {
+            alert('Voice input not supported in this browser.');
+            return;
+        }
+
+        if (voiceModeEnabled) {
+            stopVoiceInput();
+            return;
+        }
+
+        voiceModeEnabled = true;
+        updateVoiceButtonUI();
+
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+        }
+        if (isAvatarTalking) {
+            avatarStopTalking();
+        }
+
+        if (isAvatarTalking) {
+            pendingVoiceStart = true;
+            return;
+        }
+
+        beginVoiceListening();
+    }
+
+    // Order process functions
+    function startOrderProcess() {
+        conversationState = 'ordering';
+        addMessage('avatar', "What medicine would you like to order?");
+    }
+
+    async function checkMedicineStock(medicineName) {
+    try {
+        addAgentTrace('InventoryAgent', 'Checking stock', `Checking availability of ${medicineName}...`);
+        
+        const response = await fetch('/api/check-stock', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ medicine: medicineName })
+        });
+        
+        const medicineInfo = await response.json();
+        
+        if (medicineInfo && medicineInfo.available) {
+            currentOrder.medicine = medicineInfo.name.toLowerCase();
+            currentOrder.price = medicineInfo.price;
+            currentOrder.prescriptionRequired = medicineInfo.prescriptionRequired || false;
+            
+            let message = `${medicineInfo.name} is available at ₹${medicineInfo.price}. How many units?`;
+            if (medicineInfo.prescriptionRequired) {
+                message = `${medicineInfo.name} is available at ₹${medicineInfo.price} but requires a prescription. How many units?`;
+            }
+            
+            addMessage('avatar', message);
+            conversationState = 'quantity'; // Make sure this is set correctly
+            
+            addAgentTrace('InventoryAgent', 'Stock check', `✅ Available: ${medicineInfo.stock} units at ₹${medicineInfo.price}${medicineInfo.prescriptionRequired ? ' (Prescription Required)' : ''}`);
+        } else {
+            addMessage('avatar', `Sorry, ${medicineName} is not available.`);
+            addAgentTrace('InventoryAgent', 'Stock check', `❌ ${medicineInfo.message || 'Not available'}`);
+            conversationState = 'idle'; // Reset to idle if not available
+        }
+    } catch (error) {
+        console.error('Error checking stock:', error);
+        addMessage('avatar', 'Error checking stock. Please try again.');
+        conversationState = 'idle'; // Reset to idle on error
+    }
+}
+
+    function resetOrder() {
+        currentOrder = { 
+            medicine: '', 
+            quantity: 0, 
+            price: 0, 
+            userName: '', 
+            phone: '', 
+            address: '',
+            paymentMethod: 'UPI',
+            prescriptionRequired: false,
+            prescriptionValidated: false
+        };
+        prescriptionFile = null;
+        prescriptionValidated = false;
+        prescriptionValidationResult = null;
+    }
+
+    function showOrderSummary() {
+        const totalAmount = currentOrder.quantity * currentOrder.price;
+        let summaryHtml = `
+            <h3><i class="fas fa-clipboard-check"></i> Order Summary</h3>
+            <div class="summary-row">
+                <span class="summary-label">Medicine:</span>
+                <span class="summary-value">${currentOrder.medicine}</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">Quantity:</span>
+                <span class="summary-value">${currentOrder.quantity} units</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">Price per unit:</span>
+                <span class="summary-value">₹${currentOrder.price}</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">Customer:</span>
+                <span class="summary-value">${currentOrder.userName}</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">Phone:</span>
+                <span class="summary-value">${currentOrder.phone}</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">Address:</span>
+                <span class="summary-value">${currentOrder.address}</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">Payment Method:</span>
+                <span class="summary-value">${currentOrder.paymentMethod}</span>
+            </div>
+        `;
+        
+        // Add prescription status
+        if (currentOrder.prescriptionRequired) {
+            summaryHtml += `
+                <div class="summary-row">
+                    <span class="summary-label">Prescription:</span>
+                    <span class="summary-value">${currentOrder.prescriptionValidated ? '✅ Validated' : '❌ Not validated'}</span>
+                </div>
+            `;
+        }
+        
+        summaryHtml += `
+            <div class="total-amount">Total: ₹${totalAmount}</div>
+            <div class="confirmation-buttons">
+                <button class="confirm-btn yes" onclick="confirmOrder(true)">
+                    <i class="fas fa-check-circle"></i> YES, PROCEED
+                </button>
+                <button class="confirm-btn no" onclick="confirmOrder(false)">
+                    <i class="fas fa-times-circle"></i> NO, CANCEL
+                </button>
+            </div>
+        `;
+        
+        addMessage('avatar', summaryHtml, false, true);
+    }
+
+    function confirmOrder(confirmed) {
+        if (confirmed) {
+            processOrderWithAgents();
+        } else {
+            addMessage('avatar', "Order cancelled. How else can I help you?");
+            resetOrder();
+            conversationState = 'idle';
+        }
+    }
+
+    async function processOrderWithAgents() {
+        addMessage('avatar', "Processing your order through multi-agent system...");
+        
+        try {
+            addAgentTrace('OrderAgent', 'Validating order', 'Processing...');
+            
+            // Make sure prescription validation status is included
+            const orderPayload = {
+                ...currentOrder,
+                paymentMethod: currentOrder.paymentMethod || 'UPI',
+                prescriptionValidated: currentOrder.prescriptionValidated || false
+            };
+            
+            console.log('📦 Sending order payload:', orderPayload);
+            
+            const response = await fetch('/api/create-order', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-Session-Id': sessionId
+                },
+                body: JSON.stringify(orderPayload)
+            });
+            
+            const result = await response.json();
+            console.log('✅ Order result:', result);
+            
+            if (result.success) {
+                // Display agent chain of thought
+                if (result.chainOfThought && result.chainOfThought.length > 0) {
+                    result.chainOfThought.forEach(step => {
+                        let decision = '';
+                        if (step.output) {
+                            decision = step.output.message || JSON.stringify(step.output);
+                        } else if (step.decision) {
+                            decision = step.decision;
+                        }
+                        
+                        addAgentTrace(
+                            step.agent, 
+                            step.action, 
+                            decision,
+                            result.traceUrl
+                        );
+                    });
+                }
+                
+                showSuccessMessage(result);
+                if ((orderPayload.paymentMethod || '').toUpperCase() === 'COD') {
+                    addMessage('avatar', '💵 Cash on Delivery selected. Please keep the exact amount ready at delivery.');
+                } else {
+                    showQRCode(result.totalAmount, orderPayload.paymentMethod);
+                }
+                
+            } else {
+                addMessage('avatar', `❌ ${result.message}`);
+                
+                // Show which agent rejected
+                if (result.chainOfThought && result.chainOfThought.length > 0) {
+                    const lastStep = result.chainOfThought[result.chainOfThought.length - 1];
+                    addAgentTrace(lastStep.agent, lastStep.action, '❌ Rejected: ' + (lastStep.output?.message || lastStep.message || 'Unknown error'));
+                }
+            }
+            
+            conversationState = 'idle';
+            resetOrder();
+            
+        } catch (error) {
+            console.error('❌ Order processing error:', error);
+            addMessage('avatar', 'Sorry, there was an error processing your order: ' + error.message);
+            conversationState = 'idle';
+        }
+    }
+
+    function showSuccessMessage(orderResult) {
+        let successHtml = `
+            <div class="success-message-premium">
+                <i class="fas fa-check-circle"></i>
+                <h2>Order Confirmed! 🎉</h2>
+                <p><strong>Order ID:</strong> ${orderResult.orderId}</p>
+                <p><strong>Medicine:</strong> ${orderResult.medicine}</p>
+                <p><strong>Quantity:</strong> ${orderResult.quantity} units</p>
+                <p><strong>Total Amount:</strong> ₹${orderResult.totalAmount}</p>
+                <p><strong>Customer:</strong> ${currentOrder.userName}</p>
+                <p><strong>Phone:</strong> ${currentOrder.phone}</p>
+                <p><strong>Address:</strong> ${currentOrder.address}</p>
+                <p><strong>Payment Method:</strong> ${currentOrder.paymentMethod}</p>
+        `;
+        
+        if (currentOrder.prescriptionRequired && currentOrder.prescriptionValidated) {
+            successHtml += `<p><strong>Prescription:</strong> ✅ Verified</p>`;
+        }
+        
+        successHtml += `<p style="margin-top: 12px;"><i class="fas fa-sms"></i> SMS confirmation sent</p>
+            </div>
+        `;
+        
+        addMessage('avatar', successHtml, false, true);
+        
+        if (orderResult.traceUrl) {
+            addAgentTrace('System', 'View Trace', 'Click to see agent decisions', orderResult.traceUrl);
+        }
+    }
+
+    function showQRCode(amount, paymentMethod = 'UPI') {
+        const popup = document.getElementById('qrPopup');
+        const instruction = document.getElementById('paymentInstruction');
+        document.getElementById('paymentAmount').textContent = amount;
+        if (instruction) {
+            instruction.textContent = paymentMethod === 'UPI' ? 'Scan with any UPI app' : `Pay using ${paymentMethod}`;
+        }
+        popup.style.display = 'flex';
+        
+        setTimeout(() => {
+            closeQRPopup();
+        }, 30000);
+    }
+
+    function closeQRPopup() {
+        document.getElementById('qrPopup').style.display = 'none';
+    }
+
+    // Prescription upload functions
+    function showPrescriptionUpload() {
+        // Reset prescription state
+        prescriptionFile = null;
+        prescriptionValidated = false;
+        prescriptionValidationResult = null;
+        currentOrder.prescriptionValidated = false;
+        
+        const uploadHtml = `
+            <div class="prescription-upload-premium">
+                <h3><i class="fas fa-prescription"></i> Prescription Required</h3>
+                <p>This medicine requires a valid prescription. Please upload a clear image of your prescription.</p>
+                
+                <div class="upload-area-premium" onclick="document.getElementById('prescriptionFileInput').click()">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Click to upload prescription</p>
+                    <p style="font-size: 12px; opacity: 0.7;">Supported: JPG, PNG, PDF (Max 10MB)</p>
+                    <input type="file" id="prescriptionFileInput" accept="image/*,application/pdf" style="display: none;" onchange="handlePrescriptionUpload(event)">
+                </div>
+                
+                <img id="prescriptionPreview" class="prescription-preview" alt="Prescription preview">
+                
+                <div id="prescriptionStatus" class="prescription-status"></div>
+                
+                <div class="prescription-actions">
+                    <button class="prescription-btn upload" onclick="document.getElementById('prescriptionFileInput').click()">
+                        <i class="fas fa-upload"></i> CHOOSE FILE
+                    </button>
+                    <button class="prescription-btn validate" id="validatePrescriptionBtn" onclick="validatePrescription()" disabled>
+                        <i class="fas fa-check-circle"></i> VALIDATE
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        addMessage('avatar', uploadHtml, false, true);
+        conversationState = 'prescription_upload';
+    }
+
+    function handlePrescriptionUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        console.log('📎 File selected:', file.name, 'Size:', file.size, 'Type:', file.type);
+        prescriptionFile = file;
+        
+        // Show preview for images
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const preview = document.getElementById('prescriptionPreview');
+                preview.src = e.target.result;
+                preview.classList.add('visible');
+                console.log('🖼️ Image preview loaded');
+            };
+            reader.onerror = (e) => {
+                console.error('❌ Error loading image preview:', e);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            // For PDF or other files, show a document icon
+            const preview = document.getElementById('prescriptionPreview');
+            preview.src = 'https://cdn-icons-png.flaticon.com/512/337/337946.png'; // PDF icon
+            preview.classList.add('visible');
+        }
+        
+        // Enable validate button
+        const validateBtn = document.getElementById('validatePrescriptionBtn');
+        validateBtn.disabled = false;
+        validateBtn.innerHTML = '<i class="fas fa-check-circle"></i> VALIDATE';
+        
+        // Update status
+        const status = document.getElementById('prescriptionStatus');
+        status.className = 'prescription-status';
+        status.innerHTML = '<i class="fas fa-info-circle"></i> File selected. Click Validate to verify.';
+        status.style.display = 'block';
+    }
+
+    async function validatePrescription() {
+        const fileInput = document.getElementById('prescriptionFileInput');
+        if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+            alert('Please select a prescription file first');
+            return;
+        }
+        
+        const file = fileInput.files[0];
+        console.log('📄 Validating prescription file:', file.name, 'Size:', file.size, 'Type:', file.type);
+        
+        const validateBtn = document.getElementById('validatePrescriptionBtn');
+        const status = document.getElementById('prescriptionStatus');
+        const uploadArea = document.querySelector('.upload-area-premium');
+        
+        validateBtn.disabled = true;
+        validateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> VALIDATING...';
+        
+        status.className = 'prescription-status';
+        status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking prescription for ' + currentOrder.medicine + '...';
+        status.style.display = 'block';
+        
+        try {
+            const formData = new FormData();
+            formData.append('prescription', file);
+            formData.append('medicineName', currentOrder.medicine);
+            
+            console.log('📤 Sending prescription to server...');
+            
+            const response = await fetch('/api/validate-prescription', {
+                method: 'POST',
+                body: formData
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Server responded with status: ${response.status}`);
+            }
+            
+            const result = await response.json();
+            console.log('✅ Prescription validation result:', result);
+            
+            prescriptionValidationResult = result;
+            
+            if (result.valid) {
+                status.className = 'prescription-status valid';
+                status.innerHTML = `<i class="fas fa-check-circle"></i> ${result.message}`;
+                
+                // Set both variables
+                currentOrder.prescriptionValidated = true;
+                prescriptionValidated = true;
+                
+                // Add agent trace
+                addAgentTrace('PrescriptionValidator', 'Validate prescription', result.message);
+                
+                // Disable upload and validate buttons after success
+                if (uploadArea) {
+                    uploadArea.style.opacity = '0.5';
+                    uploadArea.style.pointerEvents = 'none';
+                }
+                validateBtn.disabled = true;
+                
+                // Continue with order flow
+                setTimeout(() => {
+                    addMessage('avatar', '✅ Prescription validated successfully! Please enter your name:');
+                    conversationState = 'asking_name';
+                }, 1500);
+                
+            } else {
+                status.className = 'prescription-status invalid';
+                status.innerHTML = `<i class="fas fa-times-circle"></i> ${result.message}`;
+                
+                // Reset validation status
+                currentOrder.prescriptionValidated = false;
+                prescriptionValidated = false;
+                
+                // Show specific error message in chat
+                addMessage('avatar', `❌ ${result.message} Please try again with the correct prescription.`);
+                
+                validateBtn.disabled = false;
+                validateBtn.innerHTML = '<i class="fas fa-check-circle"></i> TRY AGAIN';
+            }
+            
+        } catch (error) {
+            console.error('❌ Prescription validation error:', error);
+            status.className = 'prescription-status invalid';
+            status.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error validating prescription. Please try again.';
+            validateBtn.disabled = false;
+            validateBtn.innerHTML = '<i class="fas fa-check-circle"></i> TRY AGAIN';
+        }
+    }
+
+    // Scanner functions
+    async function openScanner() {
+        console.log('📷 Opening scanner...');
+        scannerModal.style.display = 'flex';
+        scannerError.style.display = 'none';
+        detectedMedicine.style.display = 'none';
+        scanningIndicator.style.display = 'none';
+        scannerContainer.classList.remove('has-details');
+        
+        try {
+            if (scannerStream) {
+                scannerStream.getTracks().forEach(track => track.stop());
+            }
+            
+            const constraints = {
+                video: {
+                    facingMode: 'environment',
+                    width: { ideal: 1920 },
+                    height: { ideal: 1080 }
+                }
+            };
+            
+            scannerStream = await navigator.mediaDevices.getUserMedia(constraints);
+            console.log('✅ Camera access granted');
+            
+            if (scannerVideo) {
+                scannerVideo.srcObject = scannerStream;
+                scannerVideo.setAttribute('playsinline', true);
+                scannerVideo.setAttribute('autoplay', true);
+                
+                scannerVideo.onloadedmetadata = () => {
+                    scannerVideo.play().catch(e => console.error('Video play error:', e));
+                };
+            }
+            
+            captureBtn.disabled = false;
+            
+        } catch (error) {
+            console.error('❌ Camera error:', error);
+            scannerError.textContent = 'Unable to access camera. Please check permissions.';
+            scannerError.style.display = 'block';
+            captureBtn.disabled = true;
+        }
+    }
+
+    function closeScanner() {
+        console.log('Closing scanner...');
+        scannerModal.style.display = 'none';
+        
+        if (scannerStream) {
+            scannerStream.getTracks().forEach(track => track.stop());
+            scannerStream = null;
+        }
+        
+        if (scannerVideo) {
+            scannerVideo.srcObject = null;
+        }
+        
+        detectedMedicine.style.display = 'none';
+        scanningIndicator.style.display = 'none';
+        scannerError.style.display = 'none';
+        scannerContainer.classList.remove('has-details');
+    }
+
+    async function captureImage() {
+        if (!scannerStream || !scannerVideo || scannerVideo.readyState !== 4) {
+            scannerError.textContent = 'Camera not ready. Please wait.';
+            scannerError.style.display = 'block';
+            return;
+        }
+        
+        try {
+            const canvas = document.createElement('canvas');
+            canvas.width = scannerVideo.videoWidth;
+            canvas.height = scannerVideo.videoHeight;
+            const context = canvas.getContext('2d');
+            context.drawImage(scannerVideo, 0, 0, canvas.width, canvas.height);
+            
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.9));
+            
+            scanningIndicator.style.display = 'block';
+            detectedMedicine.style.display = 'none';
+            captureBtn.disabled = true;
+            scannerError.style.display = 'none';
+            
+            const formData = new FormData();
+            formData.append('image', blob, 'medicine.jpg');
+            
+            console.log('Sending image to server...');
+            
+            const response = await fetch('/api/scan-medicine', {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-Session-Id': sessionId }
+            });
+            
+            const result = await response.json();
+            console.log('Scan result:', result);
+            
+            scanningIndicator.style.display = 'none';
+            
+            if (result.success) {
+                displayDetectedMedicine(result);
+                scannerContainer.classList.add('has-details');
+                if (isChatVisible) {
+                    addMessage('avatar', `I scanned ${result.medicine}. It's ${result.details.available ? 'available' : 'out of stock'}.${result.details.prescriptionRequired ? ' This medicine requires a prescription.' : ''}`);
+                }
+            } else {
+                scannerError.textContent = result.message || 'No medicine detected. Try again.';
+                scannerError.style.display = 'block';
+                captureBtn.disabled = false;
+            }
+            
+        } catch (error) {
+            console.error('Scan error:', error);
+            scanningIndicator.style.display = 'none';
+            scannerError.textContent = 'Error scanning medicine: ' + error.message;
+            scannerError.style.display = 'block';
+            captureBtn.disabled = false;
+        }
+    }
+
+    function displayDetectedMedicine(data) {
+        const medicine = data.details;
+        
+        document.getElementById('detectedMedicineName').textContent = medicine.name;
+        
+        // Show prescription requirement
+        if (medicine.prescriptionRequired) {
+            prescriptionBadge.textContent = 'PRESCRIPTION REQUIRED';
+            prescriptionBadge.className = 'prescription-badge required';
+        } else {
+            prescriptionBadge.textContent = 'NO PRESCRIPTION NEEDED';
+            prescriptionBadge.className = 'prescription-badge not-required';
+        }
+        
+        const status = medicine.available ? '✅ IN STOCK' : '❌ OUT OF STOCK';
+        document.getElementById('detectedMedicineStatus').innerHTML = 
+            `<span class="${medicine.available ? 'available' : 'unavailable'}">${status}</span>`;
+        
+        document.getElementById('detectedMedicinePrice').innerHTML = 
+            medicine.available ? `₹${medicine.price}` : 'N/A';
+        
+        document.getElementById('detectedMedicineStock').innerHTML = 
+            medicine.available ? `${medicine.stock} units` : '0';
+        
+        document.getElementById('detectedMedicineManufacturer').innerHTML = medicine.manufacturer || 'N/A';
+        document.getElementById('detectedMedicineComposition').innerHTML = medicine.composition || 'N/A';
+        document.getElementById('detectedMedicineExpiry').innerHTML = medicine.expiry || 'N/A';
+        
+        // Store medicine info for ordering
+        currentOrder.medicine = medicine.name.toLowerCase();
+        currentOrder.price = medicine.price;
+        currentOrder.prescriptionRequired = medicine.prescriptionRequired;
+        currentOrder.prescriptionValidated = false;
+        
+        detectedMedicine.style.display = 'block';
+        captureBtn.disabled = false;
+        
+        if (medicine.available) {
+            let message = `${medicine.name} is available. Price is ₹${medicine.price} per unit.`;
+            if (medicine.prescriptionRequired) {
+                message += ' This medicine requires a valid prescription.';
+            }
+            speakText(message);
+        } else {
+            speakText(`${medicine.name} is currently out of stock.`);
+        }
+    }
+
+    function restartScanner() {
+        detectedMedicine.style.display = 'none';
+        scannerError.style.display = 'none';
+        captureBtn.disabled = false;
+        scannerContainer.classList.remove('has-details');
+    }
+
+    function orderScannedMedicine() {
+        const medicineName = currentOrder.medicine;
+        closeScanner();
+        
+        if (!isChatVisible) {
+            toggleChat();
+        }
+        
+        setTimeout(() => {
+            conversationState = 'ordering';
+            checkMedicineStock(medicineName);
+        }, 400);
+    }
+
+    // Message processing function
+    // ==================== ENHANCED MESSAGE PROCESSING WITH SPELL CHECK ====================
+
+async function processUserMessage(message) {
+    console.log('Processing message with NLP:', message, 'Current state:', conversationState);
+    
+    // First, check if the medicine name might be misspelled (but only in appropriate states)
+    if (conversationState === 'idle' || conversationState === 'ordering') {
+        try {
+            const spellCheck = await fetch('/api/spell-check', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: message })
+            });
+            
+            const spellResult = await spellCheck.json();
+            
+            if (spellResult.suggestions && spellResult.suggestions.length > 0) {
+                // If we have suggestions but no direct match
+                if (!spellResult.detectedMedicine && spellResult.suggestions.length > 0) {
+                    const bestSuggestion = spellResult.suggestions[0];
+                    
+                    // Ask user for confirmation
+                    addMessage('avatar', `Did you mean "${bestSuggestion.suggested}"? (Reply with yes/no or the correct name)`);
+                    
+                    // Store the suggestion for later use
+                    window.pendingSuggestion = bestSuggestion.suggested;
+                    conversationState = 'confirming_spelling';
+                    return;
+                }
+            }
+        } catch (error) {
+            console.error('Spell check error:', error);
+        }
+    }
+    
+    // Call backend NLP service for advanced processing (but not in all states)
+    if (conversationState === 'idle' || conversationState === 'ordering') {
+        try {
+            const response = await fetch('/api/process-message', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    message, 
+                    state: conversationState,
+                    sessionId 
+                })
+            });
+            
+            const nlpResult = await response.json();
+            console.log('NLP result:', nlpResult);
+            
+            // Handle NLP actions
+            if (nlpResult.action === 'startOrderWithMedicine') {
+                conversationState = 'ordering';
+                await checkMedicineStock(nlpResult.medicine);
+                
+                if (nlpResult.quantity) {
+                    setTimeout(() => {
+                        processUserMessage(nlpResult.quantity.toString());
+                    }, 500);
+                }
+                return;
+            }
+            
+            if (nlpResult.action === 'openScanner') {
+                openScanner();
+                return;
+            }
+            
+            if (nlpResult.action === 'setMedicine') {
+                await checkMedicineStock(nlpResult.medicine);
+                return;
+            }
+            
+            if (nlpResult.action === 'setQuantity') {
+                // Directly set quantity without going through NLP again
+                const quantityMsg = nlpResult.quantity.toString();
+                setTimeout(() => {
+                    handleOriginalState(quantityMsg);
+                }, 500);
+                return;
+            }
+
+            if (nlpResult.action === 'processNormally' && (conversationState === 'idle' || conversationState === 'ordering')) {
+                try {
+                    const llmResponse = await fetch('/api/chat-assistant', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            message,
+                            state: conversationState,
+                            userName: currentOrder.userName || '',
+                            medicine: currentOrder.medicine || ''
+                        })
+                    });
+
+                    const llmResult = await llmResponse.json();
+                    if (llmResult && llmResult.success && llmResult.reply) {
+                        addMessage('avatar', llmResult.reply);
+                        return;
+                    }
+                } catch (llmError) {
+                    console.error('LLM chat fallback error:', llmError);
+                }
+            }
+            
+        } catch (error) {
+            console.error('NLP service error:', error);
+        }
+    }
+    
+    // Fallback to state machine
+    handleOriginalState(message);
+}
+// ==================== ORIGINAL STATE HANDLER FUNCTION ====================
+
+// ==================== ORIGINAL STATE HANDLER FUNCTION ====================
+
+async function handleOriginalState(message) {
+    const lowerMessage = message.toLowerCase();
+    
+    switch(conversationState) {
+        case 'confirming_spelling':
+            if (lowerMessage.includes('yes') || lowerMessage.includes('yep') || lowerMessage.includes('yeah') || lowerMessage.includes('correct')) {
+                // User confirmed the suggestion
+                const confirmedMedicine = window.pendingSuggestion;
+                window.pendingSuggestion = null;
+                conversationState = 'ordering';
+                await checkMedicineStock(confirmedMedicine);
+            } else if (lowerMessage.includes('no') || lowerMessage.includes('nope') || lowerMessage.includes('not')) {
+                // User rejected the suggestion
+                addMessage('avatar', "I'm sorry. Could you please spell the medicine name for me?");
+                conversationState = 'ordering';
+                window.pendingSuggestion = null;
+            } else {
+                // User might have typed a different name
+                const newMedicine = await extractMedicineFromMessage(message);
+                if (newMedicine) {
+                    conversationState = 'ordering';
+                    await checkMedicineStock(newMedicine);
+                } else {
+                    addMessage('avatar', "I didn't catch that. Could you please tell me the medicine name again?");
+                }
+            }
+            break;
+            
+        case 'quantity':
+            // Extract quantity from message (supports digits and words)
+            const quantity = extractNumberFromInput(message);
+            if (quantity !== null && !isNaN(quantity) && quantity > 0) {
+                currentOrder.quantity = quantity;
+                
+                // Check if prescription is required
+                if (currentOrder.prescriptionRequired && !currentOrder.prescriptionValidated) {
+                    showPrescriptionUpload();
+                } else {
+                    addMessage('avatar', "What's your name?");
+                    conversationState = 'asking_name';
+                }
+            } else {
+                addMessage('avatar', "Please enter a valid quantity (number or words, like 2 or two).");
+            }
+            break;
+            
+        case 'asking_name':
+            if (message.trim().length > 0) {
+                currentOrder.userName = message.trim();
+                addMessage('avatar', `Thanks ${currentOrder.userName}. Your phone number?`);
+                conversationState = 'asking_phone';
+            } else {
+                addMessage('avatar', "Please enter your name.");
+            }
+            break;
+            
+        case 'asking_phone':
+            const phoneDigits = message.replace(/\D/g, '');
+            if (phoneDigits.length >= 10) {
+                currentOrder.phone = phoneDigits;
+                addMessage('avatar', "Delivery address?");
+                conversationState = 'asking_address';
+            } else {
+                addMessage('avatar', "Please enter a valid phone number (10 digits required).");
+            }
+            break;
+            
+        case 'asking_address':
+            if (message.trim().length > 5) {
+                currentOrder.address = message.trim();
+                addMessage('avatar', "Choose payment method: UPI or COD");
+                conversationState = 'asking_payment_method';
+            } else {
+                addMessage('avatar', "Please enter a valid delivery address.");
+            }
+            break;
+
+        case 'asking_payment_method':
+            if (lowerMessage.includes('cod') || lowerMessage.includes('cash')) {
+                currentOrder.paymentMethod = 'COD';
+                showOrderSummary();
+                conversationState = 'awaiting_confirmation';
+            } else if (lowerMessage.includes('upi')) {
+                currentOrder.paymentMethod = 'UPI';
+                showOrderSummary();
+                conversationState = 'awaiting_confirmation';
+            } else {
+                addMessage('avatar', "Please choose a valid payment method: UPI or COD.");
+            }
+            break;
+            
+        case 'awaiting_confirmation':
+            if (lowerMessage.includes('yes') || lowerMessage.includes('proceed') || lowerMessage.includes('confirm') || lowerMessage.includes('place order')) {
+                await processOrderWithAgents();
+            } else if (lowerMessage.includes('no') || lowerMessage.includes('cancel') || lowerMessage.includes('stop')) {
+                addMessage('avatar', "Order cancelled. How else can I help you?");
+                resetOrder();
+                conversationState = 'idle';
+            } else {
+                addMessage('avatar', "Please confirm with 'yes' to proceed or 'no' to cancel.");
+            }
+            break;
+            
+        case 'prescription_upload':
+            // This state is handled by the upload UI
+            // Don't process text messages here
+            addMessage('avatar', "Please upload your prescription using the form above or type 'cancel' to go back.");
+            if (lowerMessage.includes('cancel')) {
+                conversationState = 'idle';
+                resetOrder();
+                addMessage('avatar', "Order cancelled. How else can I help you?");
+            }
+            break;
+            
+        default:
+            // If we're in an unknown state, reset to idle
+            console.log('Unknown state:', conversationState, 'resetting to idle');
+            conversationState = 'idle';
+            addMessage('avatar', "How can I help you? You can order medicines or scan prescriptions.");
+    }
+}
+// ==================== HELPER FUNCTIONS ====================
+
+// Helper function to extract medicine from message using NLP
+async function extractMedicineFromMessage(message) {
+    try {
+        const response = await fetch('/api/extract-medicine', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message })
+        });
+        
+        const result = await response.json();
+        if (result.medicine) {
+            console.log('✅ Extracted medicine:', result.medicine);
+            return result.medicine;
+        }
+    } catch (error) {
+        console.error('Medicine extraction error:', error);
+    }
+    return null;
+}
+    // ==================== INITIALIZATION ====================
+    window.onload = function() {
+        if (avatarVideo) {
+            avatarVideo.play().catch(e => console.log('Autoplay prevented:', e));
+        }
+        if ('speechSynthesis' in window) {
+            initializeTTSVoice();
+            window.speechSynthesis.onvoiceschanged = initializeTTSVoice;
+        }
+        checkServerConnection();
+    };
+
+    console.log('Session ID:', sessionId);
+</script>    
+</body>
+</html>
