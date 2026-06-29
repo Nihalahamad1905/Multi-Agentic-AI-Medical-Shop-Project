@@ -21,12 +21,12 @@ A full-stack **AI-powered pharmacy management system** built with a multi-agent 
 
 ```
 ┌─────────────────────────────────────────────┐
-│                 Frontend (HTML/CSS)          │
-│         public/index.html + styles.css       │
+│                 Frontend (HTML/CSS)         │
+│         public/index.html + styles.css      │
 └──────────────────────┬──────────────────────┘
                        │ REST API
 ┌──────────────────────▼──────────────────────┐
-│              Express Server (server.js)      │
+│              Express Server (server.js)     │
 │  ┌──────────┐  ┌────────────┐  ┌─────────┐  │
 │  │NLP Svc   │  │LLM Service │  │Auto     │  │
 │  │          │  │(OpenAI)    │  │Refill   │  │
@@ -34,7 +34,7 @@ A full-stack **AI-powered pharmacy management system** built with a multi-agent 
 └──────────────────────┬──────────────────────┘
                        │
 ┌──────────────────────▼──────────────────────┐
-│           Agent Orchestrator (agents/)       │
+│           Agent Orchestrator (agents/)      │
 │  ┌────────────┐ ┌───────────┐ ┌──────────┐  │
 │  │OrderAgent  │ │Inventory  │ │Payment   │  │
 │  │            │ │Agent      │ │Agent     │  │
@@ -42,8 +42,8 @@ A full-stack **AI-powered pharmacy management system** built with a multi-agent 
 └──────────────────────┬──────────────────────┘
                        │
         ┌──────────────┴──────────────┐
-        │          MySQL Database      │
-        │    + Langfuse Observability  │
+        │        MySQL Database       │
+        │  + Langfuse Observability   │
         └─────────────────────────────┘
 ```
 
